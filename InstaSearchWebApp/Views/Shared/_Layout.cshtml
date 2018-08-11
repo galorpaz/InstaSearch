@@ -3,40 +3,70 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - Instagram Search Application</title>
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/modernizr")   
+    @model InstaSearchWebApp.Common.ViewModelSearch
 </head>
-<body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>
-            </div>
+<body onload="document.forms.bing.query.focus();">
+    <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-7">
+            <form name="bing" method="post">
+                <div id="query">
+                    <h2>Search For Instagram Page (Hit Ent):</h2>
+                    <input type="text" name="query" id="term" placeholder="Search the Web" autocomplete=off>
+                </div>
+            </form>
+            <br />
+            @if (!Model.ErrorMsg.IsEmpty())
+            {
+                <br />
+                <br />
+                <div>
+                    <h2>Error</h2>
+                    <div id="_error">
+                        @Model.ErrorMsg
+                    </div>
+                </div>
+            }
+
+        </div>
+        
+    </div>   
+    <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-11">
+            <h2>Results</h2>
+            <div> @Model.StringResults </div>
+            <div> @Model.Result.Name </div>
+            <a> @Model.Result.Url </a>
+
         </div>
     </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
+    <br />
+    <div class="row">
+        <div class="col-xs-1"></div>        
+        <div class="col-xs-4">
+            <h2>History</h2>
+            @if (Model.SearchHistory != null)
+            {
+                <table class="table table-condensed">
+                    @foreach (var search in Model.SearchHistory)
+                    {
+                        <tr>
+                            <td>@search.Term</td>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+                        </tr>
+                    }
+                </table>
+            }
+        </div>
+
+    </div>
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")        
+        @RenderSection("scripts", required: false)
+        @RenderBody()
 </body>
 </html>
