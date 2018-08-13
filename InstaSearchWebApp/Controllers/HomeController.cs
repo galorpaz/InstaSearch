@@ -40,27 +40,37 @@ namespace InstaSearchWebApp.Controllers
         {
             model.ErrorMsg = string.Empty;
             model.StringResults = string.Empty;
-                 
+
             if (query != null)
             {
                 Search modelSearch = new Search() { Term = query, SearchTime = DateTime.Now };
                 db.Searches.Add(modelSearch);
-                db.SaveChanges();                
+                db.SaveChanges();
                 try
                 {
                     model.Result = instagramSearch.BingWebSearch(query);
+
+                }
+                catch (Exception e)
+                {
+                    model.StringResults = "No Results.";
+                    model.ErrorMsg = "error accured: " + e.Message;                    
+                }
+                try
+                {
                     model.SearchHistory = db.Searches.OrderByDescending(st => st.SearchTime).ToList();
                 }
                 catch (Exception e)
                 {
                     model.StringResults = "No Results.";
-                    model.ErrorMsg = "error accured: " + e.Message;
-                    return View(model);                    
+                    model.ErrorMsg = "error accured: " + e.Message;                   
                 }
-                
-                return View(model);              
+                return View(model);
             }
-            model.ErrorMsg = "Query term is empty";
+            else {
+                model.ErrorMsg = "Query term is empty";
+            }
+            
             return View(model);
             
         }
@@ -92,10 +102,15 @@ namespace InstaSearchWebApp.Controllers
                 string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
                 var data = (JObject)JsonConvert.DeserializeObject(json);
                 var pages = data["webPages"];
-                var firstPage = pages["value"].First;
+                if (pages != null)
+                {
+                    var firstPage = pages["value"].First;
 
-                searchResult.Name = firstPage["name"].ToString();
-                searchResult.Url = firstPage["url"].ToString();
+                    searchResult.Name = firstPage["name"].ToString();
+                    searchResult.Url = firstPage["url"].ToString();
+                }
+                else
+                    throw new Exception("The Name You were looking for dose not exsit or is private");                
             }
             catch (Exception e)
             {
